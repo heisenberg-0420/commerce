@@ -26,9 +26,33 @@ def category(request, title):
     return render(request, "auctions/category.html",{
         "active_listings": selected_category
     })
+    
+def listing(request, id):
+    listing_item = Listings.objects.get(pk = id)
+    listing_in_watchlist = request.user in listing_item.watchlist.all()
+    return render(request, "auctions/listing.html", {
+        "listing_item": listing_item,
+        "listing_in_watchlist": listing_in_watchlist
+    })
+    
+def remove_watchlist(request, id):
+    listing_item = Listings.objects.get(pk = id)
+    current_user= request.user
+    listing_item.watchlist.remove(current_user)
+    return HttpResponseRedirect(reverse("listing", args=(id, )))
+
+def add_watchlist(request, id):
+    listing_item = Listings.objects.get(pk = id)
+    current_user= request.user
+    listing_item.watchlist.add(current_user)
+    return HttpResponseRedirect(reverse("listing", args=(id, )))
 
 def watchlist(request):
-    return render(request, "auctions/watchlist.html")
+    current_user= request.user
+    listings = current_user.user_watchlist.all()
+    return render(request, "auctions/watchlist.html",{
+        "listings": listings
+    })
 
 def login_view(request):
     if request.method == "POST":

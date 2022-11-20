@@ -4,11 +4,11 @@
     <h2>Active Listings</h2>
     {% for listing in active_listings %}
         <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src="{{ listing.imageURL }}" alt="{{ listing.imageURL }}">
+            <img class="card-img-top" src="{{ listing.imageURL }}" alt="{{ listing.imageURL }}" height="150px">
             <div class="card-body">
                 <h5 class="card-title">{{ listing.title }}</h5>
                 <p class="card-text">{{ listing.description }}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary">Details</a>
               </div>
         </div>
     {% endfor %}

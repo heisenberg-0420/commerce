@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="mx-3">
+        <h2>{{ listing_item.title }}</h2>
+        <img src="{{ listing_item.imageURL }}" alt="pic of {{ listing_item.title }}" height="300px">
+        <p>{{ listing_item.description }}</p>
+        <p>Category: {{ listing_item.category }}</p>
+        <h5>${{ listing_item.price }} USD</h5>
+        <p>Owner: {{ listing_item.owner }}</p>
+        <div class="row mx-auto">
+            {% if user.is_authenticated %}
+                {% if listing_in_watchlist %}
+                    <form action="{% url 'removeWatchlist' id=listing_item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'addWatchlist' id=listing_item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Add to Watchlist</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
