@@ -6,13 +6,29 @@ from django.urls import reverse
 
 from .models import User, Category, Listings
 
+all_categories = Category.objects.all()
+active_listings = Listings.objects.filter(isActive=True)
+return_register = "auctions/register.html"
 
 def index(request):
-    activeListings = Listings.objects.filter(isActive=True)
     return render(request, "auctions/index.html", {
-        "listings": activeListings
+        "listings": active_listings
     })
 
+def view_categories(request):
+    return render(request, "auctions/categories.html", {
+        "category": all_categories
+    })
+
+def category(request, title):
+    category = Category.objects.get(categoryName = title)
+    selected_category = Listings.objects.filter(isActive=True, category=category)
+    return render(request, "auctions/category.html",{
+        "active_listings": selected_category
+    })
+
+def watchlist(request):
+    return render(request, "auctions/watchlist.html")
 
 def login_view(request):
     if request.method == "POST":
@@ -48,7 +64,7 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "auctions/register.html", {
+            return render(request, return_register, {
                 "message": "Passwords must match."
             })
 
@@ -57,35 +73,34 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            return render(request, "auctions/register.html", {
+            return render(request, return_register, {
                 "message": "Username already taken."
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "auctions/register.html")
+        return render(request, return_register)
     
-def createListings(request):
+def create_listings(request):
     if request.method == "GET":
-        allCategories = Category.objects.all()
         return render(request, "auctions/create.html", {
-            "categories": allCategories
+            "categories": all_categories
         })
     else:
         title = request.POST["title"]
         description = request.POST["description"]
-        imageURL = request.POST["imageURL"]
+        image_url = request.POST["imageURL"]
         price = request.POST["price"]
         category = request.POST["category"]
-        currentUser = request.user
-        categoryData = Category.objects.get(categoryName = category)
-        newListing = Listings(
+        current_user = request.user
+        category_data = Category.objects.get(categoryName = category)
+        new_listing = Listings(
             title = title,
             description = description,
-            imageURL = imageURL,
+            imageURL = image_url,
             price = float(price),
-            owner = currentUser,
-            category = categoryData
+            owner = current_user,
+            category = category_data
         )
-        newListing.save()
+        new_listing.save()
         return HttpResponseRedirect(reverse("index"))
