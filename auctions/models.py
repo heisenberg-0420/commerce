@@ -10,6 +10,9 @@ class Category(models.Model):
     
     def __str__(self):
         return self.categoryName
+    class Meta:
+        verbose_name_plural = 'Categories'
+
 
 class Listings(models.Model):
     title = models.CharField(max_length=30)
@@ -23,3 +26,15 @@ class Listings(models.Model):
     
     def __str__(self):
         return self.title
+    class Meta:
+        verbose_name_plural = 'Listings'
+
+class comments(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="comment")
+    new_comment = models.CharField(max_length = 500)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, blank=True, null=True, related_name="listing")
+    
+    def __str__(self):
+        return f"{self.author} comment on {self.listing}"
+    class Meta:
+        verbose_name_plural = 'Comments'

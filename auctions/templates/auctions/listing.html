@@ -23,5 +23,27 @@
                 {% endif %}
             {% endif %}
         </div>
+        <div class="mt-3">
+            <div class="mx-auto">
+                <h3>Comments</h3>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'comment' id=listing_item.id %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="text" placeholder="Add a comment" name="comment">
+                            <button type="submit" class="btn btn-success btn-sm">Comment</button>
+                        </div>
+                    </form>
+                {% endif %}
+                <div class="mt-3">
+                    <ul class="list-group">
+                        {% for comment in all_comments %}
+                            <li class="list-group-item">{{ comment.new_comment }}  <em>~Commented by <strong>{{ comment.author }}</strong><em>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>    
+        </div>
     </div>
 {% endblock %}
