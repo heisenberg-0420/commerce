@@ -38,3 +38,13 @@ class comments(models.Model):
         return f"{self.author} comment on {self.listing}"
     class Meta:
         verbose_name_plural = 'Comments'
+        
+class Bids(models.Model):
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="bid")
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, blank=True, null=True, related_name="bid_listing")
+    bid = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.bidder} bid on {self.listing}"
+    class Meta:
+        verbose_name_plural = 'Bids'
