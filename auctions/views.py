@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Category, Listings, comments
+from .models import User, Category, Listings, comments, Bids
 
 all_categories = Category.objects.all()
 active_listings = Listings.objects.filter(isActive=True)
@@ -19,6 +19,9 @@ def view_categories(request):
     return render(request, "auctions/categories.html", {
         "category": all_categories
     })
+
+def bid(request, id):
+    return
     
 def comment(request, id):
     current_user= request.user
