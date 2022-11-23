@@ -2,55 +2,67 @@
 
 {% block body %}
     <div class="mx-3">
-        <!-- Listing Section -->
         <h2>{{ listing_item.title }}</h2>
-        <img src="{{ listing_item.imageURL }}" alt="pic of {{ listing_item.title }}" height="300px">
-        <p>{{ listing_item.description }}</p>
-        <h5>${{ listing_item.price }} USD</h5>
-        <p><strong>Category:</strong> {{ listing_item.category }}</p>
-        <p><strong>Owner:</strong> {{ listing_item.owner }}</p>
-        <div class="row mx-auto">
-            {% if user.is_authenticated %}
-
-                <!-- Bids Section -->
-
-                <!-- Watchlist Section -->
-                {% if listing_in_watchlist %}
-                    <form action="{% url 'removeWatchlist' id=listing_item.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
-                    </form>
-                {% else %}
-                    <form action="{% url 'addWatchlist' id=listing_item.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-success">Add to Watchlist</button>
-                    </form>
-                {% endif %}
-            {% endif %}
-        </div>
-
-        <!-- comments section -->
-        <div class="mt-3"> 
+    </div>
+    <div class="row mx-3">
+        <!-- Listing Section -->
+        <div class="mt-auto">
+            <img src="{{ listing_item.imageURL }}" alt="pic of {{ listing_item.title }}" height="300px">
+            <p style="margin-top: 3px" >{{ listing_item.description }}</p>
+            <p><strong>Category:</strong> {{ listing_item.category }}</p>
+            <p><strong>Owner:</strong> {{ listing_item.owner }}</p>
             <div class="mx-auto">
-                <h3>Comments</h3>
                 {% if user.is_authenticated %}
-                    <form action="{% url 'comment' id=listing_item.id %}" method="POST">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <input type="text" placeholder="Add a comment" name="comment">
-                            <button type="submit" class="btn btn-success btn-sm">Comment</button>
-                        </div>
-                    </form>
+                    <!-- Watchlist Section -->
+                    {% if listing_in_watchlist %}
+                        <form action="{% url 'removeWatchlist' id=listing_item.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Remove from Watchlist</button>
+                        </form>
+                    {% else %}
+                        <form action="{% url 'addWatchlist' id=listing_item.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Add to Watchlist</button>
+                        </form>
+                    {% endif %}
                 {% endif %}
-                <div class="mt-3">
-                    <ul class="list-group">
-                        {% for comment in all_comments %}
-                            <li class="list-group-item">{{ comment.new_comment }}  <em>~Commented by <strong>{{ comment.author }}</strong><em>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>    
+            </div>
         </div>
+        <div class="mx-auto">
+            <!--BIDS SECTION-->
+            <p><strong>Highest Bid: </strong>${{ listing_item.price.bid }} USD</p> 
+            {% if user.is_authenticated %}
+                <form action="{% url 'bid' id=listing_item.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="number" placeholder="Enter bid" name="bid_amount">
+                        <button type="submit" class="btn btn-success btn-sm">Place Bid</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>    
+    </div>
+     <!-- comments section -->
+    <div class="mt-3"> 
+        <div class="mx-auto">
+            <h3>Comments</h3>
+            {% if user.is_authenticated %}
+                <form action="{% url 'comment' id=listing_item.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" placeholder="Add a comment" name="comment">
+                        <button type="submit" class="btn btn-success btn-sm">Comment</button>
+                    </div>
+                </form>
+            {% endif %}
+            <div class="mt-3">
+                <ul class="list-group">
+                    {% for comment in all_comments %}
+                        <li class="list-group-item">{{ comment.new_comment }}  <em>~Commented by <strong>{{ comment.author }}</strong><em>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>    
     </div>
 {% endblock %}

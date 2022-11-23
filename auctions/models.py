@@ -13,13 +13,21 @@ class Category(models.Model):
     class Meta:
         verbose_name_plural = 'Categories'
 
+class Bids(models.Model):
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="bidder")
+    bid = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.bid} by {self.bidder}"
+    class Meta:
+        verbose_name_plural = 'Bids'
 
 class Listings(models.Model):
     title = models.CharField(max_length=30)
     description = models.CharField(max_length= 200)
     imageURL = models.CharField(max_length=1000)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="user")
-    price = models.FloatField()
+    price = models.ForeignKey(Bids, on_delete=models.CASCADE, blank=True, null=True, related_name="bid_price")
     isActive = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete= models.CASCADE, blank=True, null=True, related_name="category")
     watchlist = models.ManyToManyField(User, blank=True, null=True, related_name="user_watchlist")
@@ -39,12 +47,3 @@ class comments(models.Model):
     class Meta:
         verbose_name_plural = 'Comments'
         
-class Bids(models.Model):
-    bidder = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="bid")
-    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, blank=True, null=True, related_name="bid_listing")
-    bid = models.FloatField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.bidder} bid on {self.listing}"
-    class Meta:
-        verbose_name_plural = 'Bids'

@@ -20,7 +20,7 @@ def view_categories(request):
         "category": all_categories
     })
 
-def bid(request, id):
+def new_bid(request, id):
     return
     
 def comment(request, id):
@@ -134,12 +134,14 @@ def create_listings(request):
         price = request.POST["price"]
         category = request.POST["category"]
         current_user = request.user
+        bid= Bids(bid=float(price), bidder=current_user)
+        Bids.save();
         category_data = Category.objects.get(categoryName = category)
         new_listing = Listings(
             title = title,
             description = description,
             imageURL = image_url,
-            price = float(price),
+            price = bid,
             owner = current_user,
             category = category_data
         )
