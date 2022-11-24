@@ -18,6 +18,12 @@
                 {{ winner }} is the winner. Auction Closed.
             </div>
         {% endif %}
+        {% if not listing_item.isActive and user == listing_item.price.bidder %}
+            <div class="alert alert-success" role="alert">
+                Congratulations! You won the auction.
+            </div>
+        {% endif %}
+
     </div>
 
     <div class="mx-3">
