@@ -149,6 +149,8 @@ def create_listings(request):
 def new_bid(request, id):
     new_bid= request.POST["bid_amount"]        
     listing_item = Listings.objects.get(pk = id)
+    all_comments = comments.objects.filter(listing = listing_item)
+    listing_in_watchlist = request.user in listing_item.watchlist.all()
         
     if int(new_bid) > listing_item.price.bid:
         update_bid = Bids(bid=int(new_bid), bidder = request.user)
@@ -158,11 +160,15 @@ def new_bid(request, id):
         return render(request, return_listing, {
             "listing_item": listing_item,
             "message": "Bid placed",
-            "updated": True
+            "updated": True,
+            "listing_in_watchlist": listing_in_watchlist,
+            "all_comments": all_comments
         })    
     else:
         return render(request, return_listing ,{
             "listing_item": listing_item,
             "message": "Enter a Bid higher than the current bid",
-            "updated": False
+            "updated": False,
+            "listing_in_watchlist": listing_in_watchlist,
+            "all_comments": all_comments
         })
