@@ -7,11 +7,11 @@ from django.urls import reverse
 from .models import User, Category, Listings, comments, Bids
 
 all_categories = Category.objects.all()
-active_listings = Listings.objects.filter(isActive=True)
 return_register = "auctions/register.html"
 return_listing = "auctions/listing.html"
 
 def index(request):
+    active_listings = Listings.objects.filter(isActive=True)
     return render(request, "auctions/index.html", {
         "listings": active_listings
     })
@@ -20,6 +20,21 @@ def view_categories(request):
     return render(request, "auctions/categories.html", {
         "category": all_categories
     })
+    
+def close_auction(request, id):
+    listing_item = Listings.objects.get(pk = id)
+    winner = listing_item.price.bidder
+    listing_item.isActive = False
+    listing_item.save()
+    all_comments = comments.objects.filter(listing = listing_item)
+    listing_in_watchlist = request.user in listing_item.watchlist.all()
+    return render(request, return_listing, {
+            "listing_item": listing_item,
+            "winner": winner,
+            "closed": True,
+            "listing_in_watchlist": listing_in_watchlist,
+            "all_comments": all_comments
+        })
     
 def comment(request, id):
     current_user= request.user
@@ -43,11 +58,13 @@ def category(request, title):
 def listing(request, id):
     listing_item = Listings.objects.get(pk = id)
     all_comments = comments.objects.filter(listing = listing_item)
+    is_owner = request.user.username == listing_item.owner.username
     listing_in_watchlist = request.user in listing_item.watchlist.all()
     return render(request, return_listing, {
         "listing_item": listing_item,
         "listing_in_watchlist": listing_in_watchlist,
-        "all_comments": all_comments
+        "all_comments": all_comments,
+        "is_owner": is_owner
     })
     
 def remove_watchlist(request, id):

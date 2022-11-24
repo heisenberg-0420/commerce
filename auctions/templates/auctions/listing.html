@@ -13,6 +13,11 @@
                 </div>
             {% endif %}
         {% endif %}
+        {% if closed %}
+            <div class="alert alert-success" role="alert">
+                {{ winner }} is the winner. Auction Closed.
+            </div>
+        {% endif %}
     </div>
 
     <div class="mx-3">
@@ -25,8 +30,8 @@
             <p style="margin-top: 3px" >{{ listing_item.description }}</p>
             <p><strong>Category:</strong> {{ listing_item.category }}</p>
             <p><strong>Owner:</strong> {{ listing_item.owner }}</p>
-            <div class="mx-auto">
-                {% if user.is_authenticated %}
+            <div class=" row mx-auto">
+                {% if user.is_authenticated and listing_item.isActive == True %}
                     <!-- Watchlist Section -->
                     {% if listing_in_watchlist %}
                         <form action="{% url 'removeWatchlist' id=listing_item.id %}" method="POST">
@@ -39,12 +44,20 @@
                             <button type="submit" class="btn btn-success">Add to Watchlist</button>
                         </form>
                     {% endif %}
+                    <!--Close Auction-->
+                    {% if is_owner %}
+                        <form action="{% url 'close_auction' id=listing_item.id %}" method="POST">
+                            {% csrf_token %}
+                            <button style="margin-left: 3px;" type="submit" class="btn btn-success">Close Auction</button>
+                        </form>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>
         <div class="mx-auto">
             <!--BIDS SECTION-->
             <p><strong>Highest Bid: </strong>${{ listing_item.price.bid }} USD</p> 
+            <span>Enter a higher bid to to win.</span>
             {% if user.is_authenticated %}
                 <form action="{% url 'bid' id=listing_item.id %}" method="POST">
                     {% csrf_token %}
@@ -58,7 +71,7 @@
     </div>
      <!-- comments section -->
     <div class="mt-3"> 
-        <div class="mx-auto">
+        <div class="mx-3">
             <h3>Comments</h3>
             {% if user.is_authenticated %}
                 <form action="{% url 'comment' id=listing_item.id %}" method="POST">
