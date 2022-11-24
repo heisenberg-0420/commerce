@@ -14,8 +14,8 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 class Bids(models.Model):
+    bid = models.IntegerField(null=True, blank=True)
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="bidder")
-    bid = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.bid} by {self.bidder}"

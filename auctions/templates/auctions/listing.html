@@ -1,6 +1,20 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+    <div class="container">
+        {% if message %}
+            {% if updated %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% else %}
+                <div class="alert alert-danger" role="alert">
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
     <div class="mx-3">
         <h2>{{ listing_item.title }}</h2>
     </div>
@@ -35,7 +49,7 @@
                 <form action="{% url 'bid' id=listing_item.id %}" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
-                        <input type="number" placeholder="Enter bid" name="bid_amount">
+                        <input type="number" min="0" placeholder="Enter bid" name="bid_amount">
                         <button type="submit" class="btn btn-success btn-sm">Place Bid</button>
                     </div>
                 </form>

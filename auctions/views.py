@@ -9,6 +9,7 @@ from .models import User, Category, Listings, comments, Bids
 all_categories = Category.objects.all()
 active_listings = Listings.objects.filter(isActive=True)
 return_register = "auctions/register.html"
+return_listing = "auctions/listing.html"
 
 def index(request):
     return render(request, "auctions/index.html", {
@@ -19,9 +20,6 @@ def view_categories(request):
     return render(request, "auctions/categories.html", {
         "category": all_categories
     })
-
-def new_bid(request, id):
-    return
     
 def comment(request, id):
     current_user= request.user
@@ -46,7 +44,7 @@ def listing(request, id):
     listing_item = Listings.objects.get(pk = id)
     all_comments = comments.objects.filter(listing = listing_item)
     listing_in_watchlist = request.user in listing_item.watchlist.all()
-    return render(request, "auctions/listing.html", {
+    return render(request, return_listing, {
         "listing_item": listing_item,
         "listing_in_watchlist": listing_in_watchlist,
         "all_comments": all_comments
@@ -134,7 +132,7 @@ def create_listings(request):
         price = request.POST["price"]
         category = request.POST["category"]
         current_user = request.user
-        bid= Bids(bid=float(price), bidder=current_user)
+        bid= Bids(bid=int(price), bidder=current_user)
         Bids.save();
         category_data = Category.objects.get(categoryName = category)
         new_listing = Listings(
@@ -147,3 +145,24 @@ def create_listings(request):
         )
         new_listing.save()
         return HttpResponseRedirect(reverse("index"))
+    
+def new_bid(request, id):
+    new_bid= request.POST["bid_amount"]        
+    listing_item = Listings.objects.get(pk = id)
+        
+    if int(new_bid) > listing_item.price.bid:
+        update_bid = Bids(bid=int(new_bid), bidder = request.user)
+        update_bid.save()
+        listing_item.price = update_bid
+        listing_item.save()
+        return render(request, return_listing, {
+            "listing_item": listing_item,
+            "message": "Bid placed",
+            "updated": True
+        })    
+    else:
+        return render(request, return_listing ,{
+            "listing_item": listing_item,
+            "message": "Enter a Bid higher than the current bid",
+            "updated": False
+        })
